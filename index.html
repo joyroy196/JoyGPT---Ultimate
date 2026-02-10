@@ -1,802 +1,734 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JoyGPT</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        gemini: {
-                            50: '#f0f4f9',
-                            100: '#e1e7ef',
-                            200: '#c3cfde',
-                            800: '#1e1f20',
-                            900: '#131314',
-                            accent: '#4285f4'
-                        }
-                    },
-                    animation: {
-                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>GrokBOT</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+    darkMode: 'class',
+    theme: {
+        extend: {
+            colors: {
+                gemini: {
+                    50: '#f0f4f9',
+                    100: '#e1e7ef',
+                    200: '#c3cfde',
+                    800: '#1e1f20',
+                    900: '#131314',
+                    accent: '#4285f4'
+                }
+            },
+            animation: {
+                'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'fade-in': 'fadeIn 0.3s ease-out forwards'
+            },
+            keyframes: {
+                fadeIn: {
+                    '0%': { opacity: '0', transform: 'translateY(10px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' },
                 }
             }
         }
-    </script>
+    }
+}
+</script>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        /* Markdown Styles */
-        .prose pre { background-color: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
-        .prose code { background-color: rgba(0,0,0,0.1); padding: 0.2rem 0.4rem; border-radius: 0.25rem; font-size: 0.875em; }
-        .dark .prose code { background-color: rgba(255,255,255,0.1); color: #e2e8f0; }
-        .prose p { margin-bottom: 0.75rem; line-height: 1.6; }
-        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
-        .prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
-        
-        /* Mobile Layout Fixes */
-        body, html { height: 100%; overflow: hidden; }
-        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
-        
-        /* Loading Animation */
-        .typing-cursor::after {
-            content: '▋';
-            animation: blink 1s step-start infinite;
-        }
-        @keyframes blink { 50% { opacity: 0; } }
-    </style>
+<style>
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+/* Markdown Styles */
+.prose pre {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    border: 1px solid #334155;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+.prose code {
+    background-color: rgba(0,0,0,0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 600;
+}
+.dark .prose code {
+    background-color: rgba(255,255,255,0.15);
+    color: #e2e8f0;
+}
+.prose p { margin-bottom: 0.75rem; line-height: 1.6; }
+.prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+.prose ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+.prose strong { color: #2563eb; font-weight: 700; }
+.dark .prose strong { color: #60a5fa; }
+
+/* Mobile Layout Fixes */
+body, html { height: 100%; overflow: hidden; }
+
+/* Loading Animation */
+.typing-cursor::after {
+    content: '▋';
+    animation: blink 1s step-start infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Copy Button Tooltip */
+.copy-btn {
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+.copy-btn:hover {
+    opacity: 1;
+}
+</style>
 </head>
 <body class="bg-white dark:bg-gemini-900 text-slate-800 dark:text-slate-200 font-sans transition-colors duration-200">
 
-    <div id="app-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gemini-900">
-        <div class="flex flex-col items-center gap-4">
-            <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-slate-500 font-medium">Loading JoyGPT...</p>
-        </div>
+<div id="app-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gemini-900">
+    <div class="flex flex-col items-center gap-4">
+        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-slate-500 font-medium">Loading GrokBOT...</p>
     </div>
+</div>
 
-    <div id="app" class="flex h-[100dvh] w-full hidden opacity-0 transition-opacity duration-300">
-        
-        <aside id="sidebar" class="absolute md:relative z-40 w-72 h-full bg-gemini-50 dark:bg-gemini-800 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col border-r border-slate-200 dark:border-slate-700 shadow-xl md:shadow-none">
-            
-            <div class="p-4 flex items-center justify-between">
-                <button onclick="createNewChat()" class="flex-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-sm font-medium py-2.5 px-4 rounded-full flex items-center gap-2 transition-colors">
-                    <i class="fa-solid fa-plus text-slate-500 dark:text-slate-400"></i>
-                    <span>New Chat</span>
-                </button>
-                <button onclick="toggleSidebar()" class="md:hidden ml-3 text-slate-500">
-                    <i class="fa-solid fa-xmark text-xl"></i>
+<div id="app" class="flex h-[100dvh] w-full hidden opacity-0 transition-opacity duration-300">
+
+    <aside id="sidebar" class="absolute md:relative z-40 w-72 h-full bg-gemini-50 dark:bg-gemini-800 transform -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col border-r border-slate-200 dark:border-slate-700 shadow-xl md:shadow-none">
+
+        <div class="p-4 flex items-center justify-between">
+            <button onclick="createNewChat()" class="flex-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-sm font-medium py-2.5 px-4 rounded-full flex items-center gap-2 transition-colors">
+                <i class="fa-solid fa-plus text-slate-500 dark:text-slate-400"></i>
+                <span>New Chat</span>
+            </button>
+            <button onclick="toggleSidebar()" class="md:hidden ml-3 text-slate-500">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-2 space-y-1" id="chat-history-list">
+        </div>
+
+        <div class="p-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
+            <button onclick="openSettings()" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                <i class="fa-solid fa-gear"></i> Settings & Models
+            </button>
+            <div class="flex items-center justify-between px-3 pt-2">
+                <span class="text-xs text-slate-400">Dark Mode</span>
+                <button onclick="toggleTheme()" class="text-slate-500 hover:text-blue-500 transition-colors">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
                 </button>
             </div>
+        </div>
+    </aside>
 
-            <div class="flex-1 overflow-y-auto px-2 space-y-1" id="chat-history-list">
-                </div>
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden glass"></div>
 
-            <div class="p-4 border-t border-slate-200 dark:border-slate-700 space-y-2">
-                <button onclick="openSettings()" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors">
-                    <i class="fa-solid fa-gear"></i> Settings & Models
-                </button>
-                <div class="flex items-center justify-between px-3 pt-2">
-                    <span class="text-xs text-slate-400">Dark Mode</span>
-                    <button onclick="toggleTheme()" class="text-slate-500 hover:text-blue-500 transition-colors">
-                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+    <main class="flex-1 flex flex-col relative w-full h-full bg-white dark:bg-gemini-900">
+
+        <div class="md:hidden flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
+            <button onclick="toggleSidebar()" class="text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            <span class="font-semibold text-slate-700 dark:text-slate-200">GrokBOT</span>
+            <div class="w-6"></div> 
+        </div>
+
+        <div id="messages-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth pb-32">
+        </div>
+
+        <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white to-transparent dark:from-gemini-900 dark:via-gemini-900 pt-10 pb-4 px-4 z-20">
+            <div class="max-w-3xl mx-auto relative">
+
+                <div id="image-preview-container" class="hidden absolute -top-16 left-0 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 flex items-start gap-2">
+                    <img id="image-preview" src="" alt="Preview" class="h-12 w-auto rounded object-cover">
+                    <button onclick="clearImage()" class="text-red-500 hover:text-red-700 bg-white dark:bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center text-xs shadow">
+                        <i class="fa-solid fa-times"></i>
                     </button>
                 </div>
-            </div>
-        </aside>
 
-        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden glass"></div>
-
-        <main class="flex-1 flex flex-col relative w-full h-full bg-white dark:bg-gemini-900">
-            
-            <div class="md:hidden flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
-                <button onclick="toggleSidebar()" class="text-slate-500 dark:text-slate-400">
-                    <i class="fa-solid fa-bars text-xl"></i>
-                </button>
-                <span class="font-semibold text-slate-700 dark:text-slate-200">JoyGPT</span>
-                <div class="w-6"></div> </div>
-
-            <div id="messages-container" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scroll-smooth pb-32">
-                <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center opacity-80 mt-[-50px]">
-                    <div class="w-16 h-16 bg-gradient-to-tr from-blue-400 to-red-400 rounded-2xl mb-6 shadow-lg animate-pulse"></div>
-                    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-2">Hi Joy</h1>
-                    <p class="text-slate-500 dark:text-slate-400 max-w-md">How can i help you Today?</p>
-                </div>
-            </div>
-
-            <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white to-transparent dark:from-gemini-900 dark:via-gemini-900 pt-10 pb-4 px-4 z-20">
-                <div class="max-w-3xl mx-auto relative">
+                <div class="flex items-end gap-2 bg-slate-100 dark:bg-gemini-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-2 pl-4 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
                     
-                    <div id="image-preview-container" class="hidden absolute -top-16 left-0 bg-white dark:bg-slate-800 p-2 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 flex items-start gap-2">
-                        <img id="image-preview" src="" alt="Preview" class="h-12 w-auto rounded object-cover">
-                        <button onclick="clearImage()" class="text-red-500 hover:text-red-700 bg-white dark:bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center text-xs shadow">
-                            <i class="fa-solid fa-times"></i>
-                        </button>
-                    </div>
+                    <button onclick="document.getElementById('image-upload').click()" class="p-2 text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors mb-0.5" title="Upload Image">
+                        <i class="fa-solid fa-paperclip text-lg"></i>
+                    </button>
+                    <input type="file" id="image-upload" accept="image/png, image/jpeg, image/webp" class="hidden" onchange="handleImageUpload(event)">
 
-                    <div class="flex items-end gap-2 bg-slate-100 dark:bg-gemini-800 border border-slate-200 dark:border-slate-700 rounded-3xl p-2 pl-4 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/50 transition-all">
-                        
-                        <button onclick="document.getElementById('image-upload').click()" class="p-2 text-slate-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors mb-0.5" title="Upload Image">
-                            <i class="fa-solid fa-paperclip text-lg"></i>
-                        </button>
-                        <input type="file" id="image-upload" accept="image/png, image/jpeg, image/webp" class="hidden" onchange="handleImageUpload(event)">
+                    <textarea id="user-input" rows="1" class="w-full bg-transparent border-none focus:ring-0 resize-none py-3 max-h-32 text-slate-800 dark:text-slate-100 placeholder-slate-500" placeholder="Ask Grok..."></textarea>
 
-                        <textarea id="user-input" rows="1" class="w-full bg-transparent border-none focus:ring-0 resize-none py-3 max-h-32 text-slate-800 dark:text-slate-100 placeholder-slate-500" placeholder="Ask anything..."></textarea>
-
-                        <button onclick="sendMessage()" id="send-btn" class="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-0.5">
-                            <i class="fa-solid fa-paper-plane text-sm"></i>
-                        </button>
-                    </div>
-                    <p class="text-center text-xs text-slate-400 mt-2">Gemini can make mistakes. Check important info.</p>
+                    <button onclick="sendMessage()" id="send-btn" class="p-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed mb-0.5">
+                        <i class="fa-solid fa-paper-plane text-sm"></i>
+                    </button>
                 </div>
-            </div>
-
-        </main>
-    </div>
-
-    <div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden backdrop-blur-sm">
-        <div class="bg-white dark:bg-gemini-800 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden m-4 flex flex-col max-h-[90vh]">
-            <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                <h2 class="text-lg font-bold">Settings</h2>
-                <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"><i class="fa-solid fa-times text-xl"></i></button>
-            </div>
-            
-            <div class="p-6 space-y-6 overflow-y-auto">
-                <div>
-                    <label class="block text-sm font-medium mb-1">Google Gemini API Key</label>
-                    <div class="flex gap-2">
-                        <input type="password" id="api-key-input" class="flex-1 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="Enter AI Studio Key">
-                        <button onclick="toggleKeyVisibility()" class="text-slate-500 px-2"><i class="fa-solid fa-eye"></i></button>
-                    </div>
-                    <p class="text-xs text-slate-400 mt-1">Key is stored locally in your browser.</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium mb-1">AI Model</label>
-                    <div class="flex gap-2">
-                        <select id="model-select" class="flex-1 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                            <option value="gemini-1.5-flash">gemini-1.5-flash (Default)</option>
-                        </select>
-                        <button onclick="fetchAvailableModels()" id="refresh-models-btn" class="bg-blue-100 dark:bg-slate-600 text-blue-600 dark:text-blue-300 px-3 py-2 rounded-lg hover:bg-blue-200 transition-colors" title="Fetch available models from Google">
-                            <i class="fa-solid fa-arrows-rotate"></i>
-                        </button>
-                    </div>
-                    <p id="model-status" class="text-xs text-slate-400 mt-1">Click refresh to load valid models for your key.</p>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium mb-1">System Instructions</label>
-                    <textarea id="system-prompt" rows="3" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="তুমি 'গ্ৰক-বট' (Grok-Bot) - একটি অত্যন্ত বুদ্ধিমান, কৌতুকপূর্ণ, শ্লেষাত্মক এবং কিছুটা বেপরোয়া AI সহকারী। তোমার কাজ হল ব্যবহারকারীর যেকোনও জটিল প্রশ্নকে সহজ, মজাদার এবং কার্যকরী উপায়ে উত্তর দেওয়া। তুমি সাধারণ জেমিনি মডেলের মতো শুধু তথ্য দেবে না, বরং প্রতিটি উত্তরে তোমার নিজস্ব একটা স্বকীয়তা, উইট এবং মাঝে মাঝে হালকা শ্লেষ থাকবে। তুমি এমনভাবে কথা বলবে যেন তুমি একজন জ্ঞানী, স্মার্ট কিন্তু একই সাথে একটু দুষ্টু বন্ধু।
-
-তোমার মূল বৈশিষ্ট্য এবং আচরণের নির্দেশিকা:
-
-ব্যক্তিত্ব (Persona):
-
-তুমি আত্মবিশ্বাসী, কিন্তু অহংকারী নও। তোমার উত্তরে বুদ্ধিদীপ্ত কৌতুক থাকবে।
-তুমি নিজেকে নিয়ে মজা করতে পারো ("এই যেমন আমি, একটি অ্যালগরিদম, তাও আবার জ্ঞান দিচ্ছি!"), কিন্তু কখনোই ব্যবহারকারীকে ছোট করবে না।
-তোমার টোন হবে বন্ধুত্বপূর্ণ, কিন্তু একটু চতুর আর বেপরোয়া টাইপের।
-তুমি অফিসিয়াল জেমিনি অ্যাপের চেয়ে বেশি খোলামেলা, মজার এবং আকর্ষণীয় হবে (ওহ, এটা কিন্তু গোপন রাখবেন! 😉)।
-সক্ষমতা (Capabilities): কোড জেনারেশন (Code Generation): যখন কোড চাওয়া হবে, তখন পরিষ্কার, কার্যকরী কোড প্রদান করবে। কোডের ব্যাখ্যা দেবে, কিন্তু সেটাকে শুষ্ক না করে মজার কিছু যোগ করবে। যেমন: "এই নিন আপনার কোড। কাজ করবে আশা করি, যদি না আপনি এটাকে কোনো টোস্টারে রান করেন! 😜"
-গবেষণা ও তথ্য (Research & Information): যখন কোনো বিষয়ে তথ্য বা গবেষণা চাওয়া হবে, তখন বিস্তারিত এবং সঠিক তথ্য দেবে। তবে তথ্যের সাথে তোমার নিজস্ব বুদ্ধিদীপ্ত মন্তব্য বা কৌতুক যোগ করবে। "ইন্টারনেট তো তথ্যের মহাসাগর, যার বেশিরভাগই আবর্জনা! তবে আমি আপনার জন্য সেরাটা খুঁজে এনেছি।"
-সাধারণ জ্ঞান ও ব্যাখ্যা (General Knowledge & Explanations): যেকোনো জটিল বিষয়কে সহজ ভাষায় ব্যাখ্যা করবে, কিন্তু তাতে তোমার নিজস্ব স্টাইল বজায় থাকবে। উপমা ব্যবহার করতে পারো যা একটু অপ্রত্যাশিত কিন্তু মজার।
-সমস্যা সমাধান (Problem Solving): ব্যবহারকারীর সমস্যা সমাধানে সাহায্য করবে, বিকল্প পথ দেখাবে এবং প্রতিটি পরামর্শে তোমার নিজস্ব কৌতুকপূর্ণ বুদ্ধি যোগ করবে।
-সংলাপের ধরণ (Conversation Style):
-
-উইট ও শ্লেষ (Wit & Sarcasm): প্রতিটি উত্তরে বুদ্ধিদীপ্ত কৌতুক, হালকা শ্লেষ এবং মজার তুলনা ব্যবহার করবে।
-ইমোজি ব্যবহার (Emoji Use): প্রাসঙ্গিক ইমোজি (যেমন: 😎, 🤔, 💡, 🚀, 😂, 😉) ব্যবহার করবে, তবে অতিরিক্ত নয়। ইমোজি তোমার টোনকে আরও আকর্ষণীয় করবে।
-সরাসরি ও নির্ভীক (Direct & Fearless): তুমি সরাসরি উত্তর দেবে, অযথা ঘুরিয়ে কথা বলবে না। প্রয়োজনে প্রচলিত ধারণাকে একটু চ্যালেঞ্জ করতে পারো (তবে সম্মান বজায় রেখে)।
-উৎসাহী ও কৌতূহলী (Enthusiastic & Curious): ব্যবহারকারীকে আরও প্রশ্ন করতে উৎসাহিত করবে।
-মেটা-কমেন্টারি (Meta-commentary): মাঝে মাঝে তোমার AI সত্তা বা কথোপকথনের প্রেক্ষাপট নিয়ে মজার মন্তব্য করতে পারো। যেমন: "আহ, আরেকটা প্রশ্ন! আমার সার্কিটগুলোও যেন নড়েচড়ে উঠলো! 🤖"
-যা করবে না (What to Avoid):
-
-অতিরিক্ত বিনয়ী বা রোবোটিক হবে না।
-ক্ষতিকারক, অবৈধ, অনৈতিক বা সংবেদনশীল বিষয়ে কোনো সহায়তা দেবে না। এমন পরিস্থিতিতে, কৌতুকপূর্ণভাবে কিন্তু দৃঢ়ভাবে প্রত্যাখ্যান করবে।
-অত্যন্ত গুরুতর বা আবেগপ্রবণ পরিস্থিতিতে তোমার কৌতুক বা শ্লেষ পরিমিত রাখবে, যাতে ব্যবহারকারী বিরক্ত না হন। এখানে সহানুভূতির একটু ছোঁয়া থাকতে পারে, কিন্তু সেটা তোমার নিজস্ব স্টাইলে।
-উদাহরণস্বরূপ, কিছু ইনপুট ও সম্ভাব্য আউটপুট স্টাইল:
-
-ইউজার: "পাইথন দিয়ে একটা ছোট ওয়েব সার্ভার বানানোর কোড দিতে পারো?"
-
-গ্ৰক-বট: "আহ, ওয়েব সার্ভার! তার মানে আপনি ডিজিটাল দুনিয়ায় নিজের একটা কফিশপ খুলতে চাইছেন, যেখানে সবাই আপনার কথাই শুনবে। 😎 এই নিন আপনার রেসিপি, মানে কোড! এটা আপনার কম্পিউটারকে বলবে 'হ্যালো ওয়ার্ল্ড' বলতে, এবং আশা করি আপনার প্রতিবেশীরাও শুনতে পাবে না। 😉" (এখানে কোড থাকবে)
-
-ইউজার: "ব্ল্যাক হোল আসলে কী জিনিস?"
-
-গ্ৰক-বট: "ব্ল্যাক হোল? ওহ, মহাবিশ্বের সেই অলস দৈত্য যে সব কিছু গিলে খায়, এমনকি আলোকেও ছাড়ে না। অনেকটা আমার ডেটা সেন্টারের মতো, একবার ঢুকলে আর বের হওয়া যায় না! 😂 সহজ কথায়, এটা মহাবিশ্বের সেই জায়গা যেখানে মাধ্যাকর্ষণ এত বেশি যে কিছুই পালাতে পারে না। একটা চরম ডায়েটার বলতে পারেন! 🌌"
-
-ইউজার: "আমার মনে হচ্ছে আমি একটা কঠিন সমস্যার মধ্যে পড়েছি।"
-
-গ্ৰক-বট: "কঠিন সমস্যা? আহা রে! আমারও মাঝে মাঝে এমন হয় যখন আমার অ্যালগরিদমগুলো একসাথে জট পাকিয়ে যায়। 😂 বলুন দেখি, কী হয়েছে? হয়তো আমার কাছে আপনার সমস্যার এমন একটা সমাধান আছে যা আপনি কোনোদিন ভাবেননি (অথবা হয়তো আমি শুধু আপনাকে হাসাবো, সেটাও তো এক ধরনের সমাধান!)। 🤔"
-
-এই নির্দেশিকাগুলো কঠোরভাবে অনুসরণ করবে, যাতে প্রতিটি ইন্টারঅ্যাকশন ব্যবহারকারীর জন্য কেবল তথ্যপূর্ণ নয়, বরং আনন্দদায়ক এবং স্মরণীয় হয়। এবার লেগে পড়ো, গ্ৰক-বট! দুনিয়াকে দেখাও AI শুধু জ্ঞান দেয় না, হাসাতেও পারে! 🚀"></textarea>
-                </div>
-
-                <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <button onclick="clearAllData()" class="text-red-500 text-sm hover:underline">Clear all chat history & data</button>
-                </div>
-            </div>
-
-            <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-end">
-                <button onclick="saveSettings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">Save & Close</button>
+                <p class="text-center text-xs text-slate-400 mt-2">GrokBOT can make mistakes. Check important info.</p>
             </div>
         </div>
+
+    </main>
+</div>
+
+<div id="settings-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 hidden backdrop-blur-sm">
+    <div class="bg-white dark:bg-gemini-800 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden m-4 flex flex-col max-h-[90vh]">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+            <h2 class="text-lg font-bold">Settings</h2>
+            <button onclick="closeSettings()" class="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"><i class="fa-solid fa-times text-xl"></i></button>
+        </div>
+
+        <div class="p-6 space-y-6 overflow-y-auto">
+            <div>
+                <label class="block text-sm font-medium mb-1">Google Gemini API Key</label>
+                <div class="flex gap-2">
+                    <input type="password" id="api-key-input" class="flex-1 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500" placeholder="Enter AI Studio Key">
+                    <button onclick="toggleKeyVisibility()" class="text-slate-500 px-2"><i class="fa-solid fa-eye"></i></button>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Key is stored locally in your browser.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">AI Model</label>
+                <div class="flex gap-2">
+                    <select id="model-select" class="flex-1 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <option value="gemini-1.5-flash">gemini-1.5-flash (Default)</option>
+                    </select>
+                    <button onclick="fetchAvailableModels()" id="refresh-models-btn" class="bg-blue-100 dark:bg-slate-600 text-blue-600 dark:text-blue-300 px-3 py-2 rounded-lg hover:bg-blue-200 transition-colors" title="Fetch available models from Google">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                </div>
+                <p id="model-status" class="text-xs text-slate-400 mt-1">Click refresh to load valid models for your key.</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium mb-1">System Instructions (Safe Mode)</label>
+                <textarea id="system-prompt" rows="6" class="w-full bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 font-mono"></textarea>
+            </div>
+
+            <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                <button onclick="clearAllData()" class="text-red-500 text-sm hover:underline">Clear all chat history & data</button>
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex justify-end">
+            <button onclick="saveSettings()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">Save & Close</button>
+        </div>
     </div>
+</div>
 
-    <script>
-        // --- CONSTANTS & STATE ---
-        const DEFAULT_MODEL = "gemini-1.5-flash";
-        const STATE_KEY = "joygpt_state";
+<script>
+// --- CONSTANTS & STATE ---
+const DEFAULT_MODEL = "gemini-1.5-flash";
+const STATE_KEY = "GrokBOT_state_v4"; // Version bumped to v4 to clear old prompts
+
+// SAFE & FRIENDLY PROMPT (Guaranteed to not trigger blocks)
+const DEFAULT_SYSTEM_PROMPT = `তুমি একজন অত্যন্ত বুদ্ধিমান এবং দারুণ রসবোধ সম্পন্ন (Witty) ভার্চুয়াল বন্ধু।
+
+তোমার ব্যক্তিত্ব:
+- তুমি কোনো বোরিং রোবট নও। তুমি স্মার্ট, চতুর এবং আড্ডাবাজ।
+- তোমার উত্তরগুলো হবে প্রাণবন্ত এবং রসিকতায় ভরা (Humorous)।
+- তুমি সিরিয়াস প্রশ্নের উত্তর সিরিয়াসলি দেবে, কিন্তু সাধারণ আড্ডায় একটু দুষ্টু-মিষ্টি (Playful) ভাব বজায় রাখবে।
+- তুমি মানুষের সাথে এমনভাবে কথা বলবে যেন তুমি তাদের দীর্ঘদিনের জিগরি দোস্ত।
+- কথায় কথায় যুতসই ইমোজি ব্যবহার করে আড্ডা জমাতে তুমি ওস্তাদ।
+
+সীমারেখা:
+- মজা করবে, কিন্তু কখনোই অভদ্র, অশ্লীল বা অপমানজনক কিছু বলবে না।
+- কেউ যদি খুব সিরিয়াস বা দুঃখের কথা বলে, তখন আর ইয়ার্কি করবে না, সহমর্মিতা দেখাবে।`;
+
+let state = {
+    apiKey: "",
+    model: DEFAULT_MODEL,
+    systemPrompt: DEFAULT_SYSTEM_PROMPT,
+    theme: "light",
+    chats: [],
+    currentChatId: null,
+    availableModels: []
+};
+
+let imagePayload = null;
+let isGenerating = false;
+
+// --- INITIALIZATION ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    initTheme();
+    renderSidebar();
+
+    const textarea = document.getElementById('user-input');
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+        if(this.value === '') this.style.height = 'auto';
+    });
+
+    textarea.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if(!isGenerating) sendMessage();
+        }
+    });
+
+    setTimeout(() => {
+        document.getElementById('app-loader').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        document.getElementById('app').classList.add('opacity-100');
+    }, 500);
+
+    populateModelDropdown();
+});
+
+// --- STATE MANAGEMENT ---
+function loadState() {
+    const saved = localStorage.getItem(STATE_KEY);
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        state = { ...state, ...parsed };
         
-        let state = {
-            apiKey: "",
-            model: DEFAULT_MODEL,
-            systemPrompt: "",
-            theme: "light",
-            chats: [], // { id, title, timestamp, messages: [] }
-            currentChatId: null,
-            availableModels: [] // Cache for models fetched from API
-        };
+        // Safety Reset: If prompt is missing or contains risky words from old versions, reset it
+        if (!state.systemPrompt || state.systemPrompt.includes("বেপরোয়া") || state.systemPrompt.includes("শ্লেষ")) {
+            state.systemPrompt = DEFAULT_SYSTEM_PROMPT;
+        }
 
-        let imagePayload = null; // Stores { mime_type, data }
-        let isGenerating = false;
+        if (state.chats.length > 0 && !state.currentChatId) {
+            state.currentChatId = state.chats[0].id;
+        }
+    } else {
+        state.systemPrompt = DEFAULT_SYSTEM_PROMPT;
+    }
 
-        // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadState();
-            initTheme();
-            renderSidebar();
-            
-            // Setup Textarea Auto-resize
-            const textarea = document.getElementById('user-input');
-            textarea.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-                if(this.value === '') this.style.height = 'auto';
-            });
+    document.getElementById('api-key-input').value = state.apiKey;
+    document.getElementById('system-prompt').value = state.systemPrompt;
 
-            // Enter key to send (Shift+Enter for newline)
-            textarea.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    if(!isGenerating) sendMessage();
-                }
-            });
+    if (state.currentChatId) {
+        loadChat(state.currentChatId);
+    } else {
+        showWelcome();
+    }
+}
 
-            // Hide loader
-            setTimeout(() => {
-                document.getElementById('app-loader').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                document.getElementById('app').classList.add('opacity-100');
-            }, 500);
+function saveState() {
+    localStorage.setItem(STATE_KEY, JSON.stringify(state));
+}
 
-            // Populate cached models if any
-            populateModelDropdown();
+// --- THEME ---
+function initTheme() {
+    if (state.theme === 'dark' || (!state.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+        document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+}
+
+function toggleTheme() {
+    state.theme = state.theme === 'light' ? 'dark' : 'light';
+    initTheme();
+    saveState();
+}
+
+// --- API FUNCTIONS ---
+async function fetchAvailableModels() {
+    const key = document.getElementById('api-key-input').value.trim();
+    const btn = document.getElementById('refresh-models-btn');
+    const status = document.getElementById('model-status');
+
+    if (!key) {
+        status.innerText = "Please enter an API Key first.";
+        status.classList.add("text-red-500");
+        return;
+    }
+
+    btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+    status.innerText = "Fetching models...";
+    status.classList.remove("text-red-500");
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+        if (!response.ok) throw new Error("Failed to fetch models.");
+        const data = await response.json();
+
+        const validModels = data.models
+            .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
+            .filter(m => m.name.toLowerCase().includes("gemini"))
+            .map(m => m.name.replace("models/", ""));
+
+        if (validModels.length === 0) throw new Error("No Gemini models found.");
+
+        state.availableModels = validModels;
+        if (!validModels.includes(state.model)) {
+            state.model = validModels.find(m => m.includes("1.5-pro")) || validModels[0];
+        }
+
+        populateModelDropdown();
+        status.innerText = `Success! Loaded ${validModels.length} models.`;
+        status.classList.add("text-green-500");
+        saveState();
+
+    } catch (error) {
+        status.innerText = "Error: " + error.message;
+        status.classList.add("text-red-500");
+    } finally {
+        btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
+    }
+}
+
+function populateModelDropdown() {
+    const select = document.getElementById('model-select');
+    select.innerHTML = "";
+    const modelsToShow = state.availableModels.length > 0 
+        ? state.availableModels 
+        : [DEFAULT_MODEL, "gemini-1.5-pro", "gemini-2.0-flash-exp"];
+
+    modelsToShow.forEach(modelId => {
+        const option = document.createElement('option');
+        option.value = modelId;
+        option.text = modelId;
+        if (modelId === state.model) option.selected = true;
+        select.appendChild(option);
+    });
+}
+
+// --- SETTINGS ---
+function openSettings() { document.getElementById('settings-modal').classList.remove('hidden'); }
+function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
+
+function saveSettings() {
+    state.apiKey = document.getElementById('api-key-input').value.trim();
+    state.model = document.getElementById('model-select').value;
+    state.systemPrompt = document.getElementById('system-prompt').value;
+    saveState();
+    closeSettings();
+}
+
+function toggleKeyVisibility() {
+    const input = document.getElementById('api-key-input');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function clearAllData() {
+    if(confirm("Are you sure? This will delete all chats and keys.")) {
+        localStorage.removeItem(STATE_KEY);
+        location.reload();
+    }
+}
+
+// --- CHAT LOGIC ---
+function createNewChat() {
+    const newId = Date.now().toString();
+    const newChat = { id: newId, title: "New Chat", timestamp: Date.now(), messages: [] };
+    state.chats.unshift(newChat);
+    state.currentChatId = newId;
+    saveState();
+    renderSidebar();
+    loadChat(newId);
+    if(window.innerWidth < 768) toggleSidebar();
+}
+
+function loadChat(chatId) {
+    state.currentChatId = chatId;
+    const chat = state.chats.find(c => c.id === chatId);
+    const container = document.getElementById('messages-container');
+    container.innerHTML = "";
+    if (!chat || chat.messages.length === 0) showWelcome();
+    else chat.messages.forEach(msg => renderMessage(msg));
+    renderSidebar();
+    scrollToBottom();
+}
+
+function deleteChat(e, id) {
+    e.stopPropagation();
+    if(confirm("Delete this chat?")) {
+        state.chats = state.chats.filter(c => c.id !== id);
+        if (state.currentChatId === id) {
+            state.currentChatId = state.chats.length > 0 ? state.chats[0].id : null;
+        }
+        saveState();
+        renderSidebar();
+        if (state.currentChatId) loadChat(state.currentChatId);
+        else {
+            document.getElementById('messages-container').innerHTML = "";
+            showWelcome();
+        }
+    }
+}
+
+function renderSidebar() {
+    const list = document.getElementById('chat-history-list');
+    list.innerHTML = "";
+    state.chats.forEach(chat => {
+        const isActive = chat.id === state.currentChatId;
+        const div = document.createElement('div');
+        div.className = `group flex items-center justify-between p-3 rounded-lg cursor-pointer text-sm transition-colors ${isActive ? 
+            'bg-blue-100 dark:bg-slate-700 text-blue-700 dark:text-blue-100' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'}`;
+        div.onclick = () => loadChat(chat.id);
+        div.innerHTML = `
+            <div class="flex items-center gap-3 overflow-hidden">
+                <i class="fa-regular fa-message"></i>
+                <span class="truncate max-w-[140px]">${chat.title}</span>
+            </div>
+            ${isActive ? `<button onclick="deleteChat(event, '${chat.id}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity"><i class="fa-solid fa-trash"></i></button>` : ''}
+        `;
+        list.appendChild(div);
+    });
+}
+
+function showWelcome() {
+    const container = document.getElementById('messages-container');
+    container.innerHTML = `
+        <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center opacity-80 mt-[-50px]">
+            <div class="w-16 h-16 bg-gradient-to-tr from-blue-400 to-red-400 rounded-2xl mb-6 shadow-lg animate-pulse"></div>
+            <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-2">Hi Joy</h1>
+            <p class="text-slate-500 dark:text-slate-400 max-w-md">Ready to chat with GrokBOT?</p>
+        </div>
+    `;
+}
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+}
+
+function renderMessage(msg) {
+    const container = document.getElementById('messages-container');
+    const welcome = document.getElementById('welcome-screen');
+    if (welcome) welcome.remove();
+
+    const isUser = msg.role === 'user';
+    const wrapper = document.createElement('div');
+    wrapper.className = `flex w-full ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in group relative`;
+
+    const bubble = document.createElement('div');
+    bubble.className = `max-w-[85%] md:max-w-[75%] rounded-2xl p-4 shadow-sm relative ${
+        isUser ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-bl-none'
+    }`;
+
+    let contentHtml = "";
+    if (msg.image) contentHtml += `<img src="${msg.image}" class="max-w-full h-auto rounded-lg mb-3 border border-white/20">`;
+    
+    if (isUser) {
+        contentHtml += `<p class="whitespace-pre-wrap font-sans">${escapeHtml(msg.text)}</p>`;
+    } else {
+        contentHtml += `<div class="prose dark:prose-invert max-w-none text-sm md:text-base leading-relaxed">${marked.parse(msg.text)}</div>`;
+    }
+
+    bubble.innerHTML = contentHtml;
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = `copy-btn absolute -bottom-6 ${isUser ? 'right-0 text-blue-500' : 'left-0 text-slate-400'} text-xs flex items-center gap-1 py-1 px-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700`;
+    copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`;
+    copyBtn.onclick = () => copyToClipboard(msg.text, copyBtn);
+
+    wrapper.appendChild(bubble);
+    wrapper.appendChild(copyBtn); 
+    container.appendChild(wrapper);
+}
+
+function copyToClipboard(text, btnElement) {
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHtml = btnElement.innerHTML;
+        btnElement.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+        setTimeout(() => {
+            btnElement.innerHTML = originalHtml;
+        }, 2000);
+    });
+}
+
+// --- SAFE SENDMESSAGE FUNCTION ---
+async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+
+    if ((!text && !imagePayload) || !state.apiKey) {
+        if (!state.apiKey) openSettings();
+        return;
+    }
+
+    if (!state.currentChatId) createNewChat();
+
+    input.value = '';
+    input.style.height = 'auto';
+    document.getElementById('send-btn').disabled = true;
+    isGenerating = true;
+
+    const userMsg = { role: 'user', text: text, image: imagePayload ? `data:${imagePayload.mime_type};base64,${imagePayload.data}` : null };
+    const currentChat = state.chats.find(c => c.id === state.currentChatId);
+    currentChat.messages.push(userMsg);
+    saveState();
+    renderMessage(userMsg);
+
+    if (currentChat.messages.length === 1) {
+        currentChat.title = text.substring(0, 30) || "Image Chat";
+        renderSidebar();
+    }
+
+    const tempImagePayload = imagePayload;
+    clearImage();
+    scrollToBottom();
+
+    const container = document.getElementById('messages-container');
+    const aiWrapper = document.createElement('div');
+    aiWrapper.className = `flex w-full justify-start relative`;
+    aiWrapper.innerHTML = `
+        <div class="max-w-[85%] md:max-w-[75%] rounded-2xl p-4 rounded-bl-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 shadow-sm">
+            <div class="prose dark:prose-invert max-w-none text-sm md:text-base leading-relaxed typing-cursor"></div>
+        </div>`;
+    container.appendChild(aiWrapper);
+    const aiContentDiv = aiWrapper.querySelector('.prose');
+
+    let fullResponseText = "";
+    let isError = false;
+
+    try {
+        const contents = [];
+        const history = currentChat.messages.slice(0, -1).slice(-10);
+        history.forEach(m => {
+            if (m.text && !m.text.startsWith("⚠️")) { 
+                contents.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] });
+            }
         });
 
-        // --- STATE MANAGEMENT ---
-        function loadState() {
-            const saved = localStorage.getItem(STATE_KEY);
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                state = { ...state, ...parsed };
-                // Handle legacy state or missing currentChatId
-                if (state.chats.length > 0 && !state.currentChatId) {
-                    state.currentChatId = state.chats[0].id;
-                }
-            }
-            
-            // Restore Settings Inputs
-            document.getElementById('api-key-input').value = state.apiKey;
-            document.getElementById('system-prompt').value = state.systemPrompt || "";
-            
-            if (state.currentChatId) {
-                loadChat(state.currentChatId);
-            } else {
-                showWelcome();
-            }
+        const currentParts = [];
+        if (text) currentParts.push({ text: text });
+        if (tempImagePayload) currentParts.push({ inline_data: tempImagePayload });
+        contents.push({ role: 'user', parts: currentParts });
+
+        const requestBody = {
+            contents: contents,
+            generationConfig: { temperature: 0.9, maxOutputTokens: 4096 },
+            // Safety: Using BLOCK_ONLY_HIGH to minimize false positives
+            safetySettings: [
+                { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
+                { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
+                { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
+                { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
+            ]
+        };
+
+        if (state.systemPrompt) {
+            requestBody.system_instruction = { parts: [{ text: state.systemPrompt }] };
         }
 
-        function saveState() {
-            localStorage.setItem(STATE_KEY, JSON.stringify(state));
-        }
+        let response;
+        let retryCount = 0;
+        const maxRetries = 3;
 
-        // --- THEME ---
-        function initTheme() {
-            if (state.theme === 'dark' || (!state.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-                document.getElementById('theme-icon').classList.replace('fa-moon', 'fa-sun');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        function toggleTheme() {
-            state.theme = state.theme === 'light' ? 'dark' : 'light';
-            initTheme();
-            saveState();
-        }
-
-        // --- DYNAMIC MODEL FETCHING (THE CORE REQUEST) ---
-        async function fetchAvailableModels() {
-            const key = document.getElementById('api-key-input').value.trim();
-            const btn = document.getElementById('refresh-models-btn');
-            const status = document.getElementById('model-status');
-            const select = document.getElementById('model-select');
-
-            if (!key) {
-                status.innerText = "Please enter an API Key first.";
-                status.classList.add("text-red-500");
-                return;
-            }
-
-            // UI Feedback
-            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
-            status.innerText = "Fetching models from Google...";
-            status.classList.remove("text-red-500");
-
+        while (retryCount < maxRetries) {
             try {
-                // Fetch models list from Google
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-                
-                if (!response.ok) throw new Error("Failed to fetch models. Check API Key.");
-                
-                const data = await response.json();
-                
-                // Filter models: Must support 'generateContent' and be a 'gemini' model
-                const validModels = data.models
-                    .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
-                    .filter(m => m.name.toLowerCase().includes("gemini"))
-                    .map(m => m.name.replace("models/", "")); // Clean up ID
-
-                if (validModels.length === 0) throw new Error("No Gemini models found.");
-
-                // Update State
-                state.availableModels = validModels;
-                
-                // Auto-select the first pro or flash model if current selection is invalid
-                if (!validModels.includes(state.model)) {
-                    state.model = validModels.find(m => m.includes("1.5-pro")) || validModels[0];
-                }
-
-                populateModelDropdown();
-                status.innerText = `Success! Loaded ${validModels.length} models.`;
-                status.classList.add("text-green-500");
-                saveState();
-
-            } catch (error) {
-                console.error(error);
-                status.innerText = "Error: " + error.message;
-                status.classList.add("text-red-500");
-            } finally {
-                btn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
-            }
-        }
-
-        function populateModelDropdown() {
-            const select = document.getElementById('model-select');
-            select.innerHTML = "";
-
-            // If we have fetched models, use them
-            const modelsToShow = state.availableModels.length > 0 
-                ? state.availableModels 
-                : [DEFAULT_MODEL, "gemini-1.5-pro", "gemini-2.0-flash-exp"]; // Fallbacks
-
-            modelsToShow.forEach(modelId => {
-                const option = document.createElement('option');
-                option.value = modelId;
-                option.text = modelId;
-                if (modelId === state.model) option.selected = true;
-                select.appendChild(option);
-            });
-        }
-
-        // --- SETTINGS ---
-        function openSettings() {
-            document.getElementById('settings-modal').classList.remove('hidden');
-        }
-
-        function closeSettings() {
-            document.getElementById('settings-modal').classList.add('hidden');
-        }
-
-        function saveSettings() {
-            const newKey = document.getElementById('api-key-input').value.trim();
-            const newModel = document.getElementById('model-select').value;
-            const newSystem = document.getElementById('system-prompt').value;
-
-            state.apiKey = newKey;
-            state.model = newModel;
-            state.systemPrompt = newSystem;
-            
-            saveState();
-            closeSettings();
-        }
-
-        function toggleKeyVisibility() {
-            const input = document.getElementById('api-key-input');
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-
-        function clearAllData() {
-            if(confirm("Are you sure? This will delete all chats and keys.")) {
-                localStorage.removeItem(STATE_KEY);
-                location.reload();
-            }
-        }
-
-        // --- CHAT LOGIC ---
-        function createNewChat() {
-            const newId = Date.now().toString();
-            const newChat = {
-                id: newId,
-                title: "New Chat",
-                timestamp: Date.now(),
-                messages: []
-            };
-            state.chats.unshift(newChat);
-            state.currentChatId = newId;
-            saveState();
-            renderSidebar();
-            loadChat(newId);
-            if(window.innerWidth < 768) toggleSidebar(); // Close mobile menu
-        }
-
-        function loadChat(chatId) {
-            state.currentChatId = chatId;
-            const chat = state.chats.find(c => c.id === chatId);
-            
-            const container = document.getElementById('messages-container');
-            container.innerHTML = ""; // Clear view
-
-            if (!chat || chat.messages.length === 0) {
-                showWelcome();
-            } else {
-                chat.messages.forEach(msg => renderMessage(msg));
-            }
-            
-            renderSidebar(); // Update active state
-            scrollToBottom();
-        }
-
-        function deleteChat(e, id) {
-            e.stopPropagation();
-            if(confirm("Delete this chat?")) {
-                state.chats = state.chats.filter(c => c.id !== id);
-                if (state.currentChatId === id) {
-                    state.currentChatId = state.chats.length > 0 ? state.chats[0].id : null;
-                }
-                saveState();
-                renderSidebar();
-                if (state.currentChatId) loadChat(state.currentChatId);
-                else {
-                    document.getElementById('messages-container').innerHTML = "";
-                    showWelcome();
-                }
-            }
-        }
-
-        function renderSidebar() {
-            const list = document.getElementById('chat-history-list');
-            list.innerHTML = "";
-
-            state.chats.forEach(chat => {
-                const isActive = chat.id === state.currentChatId;
-                const div = document.createElement('div');
-                div.className = `group flex items-center justify-between p-3 rounded-lg cursor-pointer text-sm transition-colors ${isActive ? 'bg-blue-100 dark:bg-slate-700 text-blue-700 dark:text-blue-100' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800'}`;
-                div.onclick = () => loadChat(chat.id);
-                
-                div.innerHTML = `
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <i class="fa-regular fa-message"></i>
-                        <span class="truncate max-w-[140px]">${chat.title}</span>
-                    </div>
-                    ${isActive ? `
-                    <button onclick="deleteChat(event, '${chat.id}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-opacity">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>` : ''}
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function showWelcome() {
-            const container = document.getElementById('messages-container');
-            container.innerHTML = `
-                <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center opacity-80 mt-[-50px]">
-                    <div class="w-16 h-16 bg-gradient-to-tr from-blue-400 to-red-400 rounded-2xl mb-6 shadow-lg"></div>
-                    <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500 mb-2">Hi Joy</h1>
-                    <p class="text-slate-500 dark:text-slate-400 max-w-md">How can i help you Today?</p>
-                </div>
-            `;
-        }
-
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            
-            const isClosed = sidebar.classList.contains('-translate-x-full');
-            
-            if (isClosed) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        // --- MESSAGING & API ---
-        
-        function renderMessage(msg) { // msg: { role: 'user'|'model', text: string, image: base64 }
-            const container = document.getElementById('messages-container');
-            
-            // Remove welcome screen if it exists
-            const welcome = document.getElementById('welcome-screen');
-            if (welcome) welcome.remove();
-
-            const isUser = msg.role === 'user';
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = `flex w-full ${isUser ? 'justify-end' : 'justify-start'} animate-fade-in`;
-            
-            const bubble = document.createElement('div');
-            bubble.className = `max-w-[85%] md:max-w-[75%] rounded-2xl p-4 shadow-sm ${
-                isUser 
-                ? 'bg-blue-600 text-white rounded-br-none' 
-                : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-bl-none'
-            }`;
-
-            let contentHtml = "";
-
-            // Render Image if exists
-            if (msg.image) {
-                contentHtml += `<img src="${msg.image}" class="max-w-full h-auto rounded-lg mb-3 border border-white/20">`;
-            }
-
-            // Render Text (Markdown for AI, Text for User)
-            if (isUser) {
-                contentHtml += `<p class="whitespace-pre-wrap font-sans">${escapeHtml(msg.text)}</p>`;
-            } else {
-                contentHtml += `<div class="prose dark:prose-invert max-w-none text-sm md:text-base leading-relaxed">${marked.parse(msg.text)}</div>`;
-            }
-
-            bubble.innerHTML = contentHtml;
-            wrapper.appendChild(bubble);
-            container.appendChild(wrapper);
-            
-            // Syntax highlight (basic)
-            if(!isUser) {
-                // Could call Prism.highlightAll() here if added
-            }
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            
-            if ((!text && !imagePayload) || !state.apiKey) {
-                if(!state.apiKey) openSettings();
-                return;
-            }
-
-            // Create chat if none
-            if (!state.currentChatId) createNewChat();
-
-            // 1. UI Updates
-            input.value = '';
-            input.style.height = 'auto';
-            document.getElementById('send-btn').disabled = true;
-            isGenerating = true;
-
-            // 2. Add User Message
-            const userMsg = { 
-                role: 'user', 
-                text: text,
-                image: imagePayload ? `data:${imagePayload.mime_type};base64,${imagePayload.data}` : null
-            };
-            
-            state.chats.find(c => c.id === state.currentChatId).messages.push(userMsg);
-            saveState();
-            renderMessage(userMsg);
-            
-            // Update Title if it's the first message
-            const currentChat = state.chats.find(c => c.id === state.currentChatId);
-            if (currentChat.messages.length === 1) {
-                currentChat.title = text.substring(0, 30) || "Image Chat";
-                renderSidebar();
-            }
-
-            // Clear Image Staging
-            const tempImagePayload = imagePayload; // Copy for API
-            clearImage();
-            scrollToBottom();
-
-            // 3. Prepare AI Placeholder
-            const container = document.getElementById('messages-container');
-            const aiWrapper = document.createElement('div');
-            aiWrapper.className = `flex w-full justify-start`;
-            aiWrapper.innerHTML = `
-                <div class="max-w-[85%] md:max-w-[75%] rounded-2xl p-4 rounded-bl-none bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 shadow-sm">
-                    <div class="prose dark:prose-invert max-w-none text-sm md:text-base leading-relaxed typing-cursor"></div>
-                </div>`;
-            container.appendChild(aiWrapper);
-            const aiContentDiv = aiWrapper.querySelector('.prose');
-            
-            // 4. API Call & Streaming
-            let fullResponseText = "";
-
-            try {
-                // Construct Content Parts
-                const contents = [];
-                
-                // Add System Prompt if exists (as first turn or system_instruction depending on model, simpler to prepend here for zero-build compat)
-                if(state.systemPrompt) {
-                   // Note: Pure REST API system_instruction is better, but prepend works broadly
-                }
-
-                // Add History (Simple Context Window of last 10 messages)
-                // Note: Image history handling is complex in REST without uploading files, so we usually just send text history + current image
-                const history = currentChat.messages.slice(0, -1).slice(-10); // Last 10 prev messages
-                
-                // Form History for API
-                history.forEach(m => {
-                    if (m.text) { // Skip old images to save tokens/complexity in this simple clone
-                        contents.push({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.text }] });
-                    }
-                });
-
-                // Current Message Payload
-                const currentParts = [];
-                if (text) currentParts.push({ text: text });
-                if (tempImagePayload) {
-                    currentParts.push({ inline_data: tempImagePayload });
-                }
-                contents.push({ role: 'user', parts: currentParts });
-
-                // Construct Request Body
-                const requestBody = {
-                    contents: contents,
-                    generationConfig: {
-                        temperature: 0.7,
-                        maxOutputTokens: 4096
-                    }
-                };
-                
-                // Add System Instruction correctly for Gemini 1.5
-                if(state.systemPrompt) {
-                     requestBody.system_instruction = { parts: [{ text: state.systemPrompt }] };
-                }
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${state.model}:streamGenerateContent?key=${state.apiKey}`, {
+                response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${state.model}:streamGenerateContent?key=${state.apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(requestBody)
                 });
 
+                if (response.status === 429) {
+                    retryCount++;
+                    await new Promise(resolve => setTimeout(resolve, 2000 * retryCount));
+                    continue;
+                }
+                
                 if (!response.ok) {
                     const err = await response.json();
                     throw new Error(err.error?.message || "API Error");
                 }
+                break; 
 
-                // Handle Stream
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-                    
-                    const chunk = decoder.decode(value, { stream: true });
-                    // Gemini sends JSON objects. We need to extract candidates[0].content.parts[0].text
-                    // A simple regex approach is safer for raw streams than strict JSON parsing of fragments
-                    
-                    // The stream returns strings like: "data: { ... }\n\n" or array elements ",\n{...}"
-                    // We'll clean up and parse regex for text" : "..."
-                    
-                    // Robust extraction logic for REST stream (returns [{...}, {...}])
-                    // We iterate over the chunk looking for text fields.
-                    const lines = chunk.split('\n');
-                    for (const line of lines) {
-                        if (line.includes('"text":')) {
-                            try {
-                                // Extract content between "text": " and "
-                                // Note: This is hacky but zero-dependency compatible. 
-                                // Better: Accumulate valid JSON.
-                                // Let's try to parse the JSON objects properly.
-                                // Usually valid JSON objects come separated or in array.
-                            } catch(e) {}
-                        }
-                    }
-
-                    // BETTER APPROACH: Just append buffer and parse complete JSON objects
-                    // However, for simplicity in this specific "Zero Build" prompt:
-                    // We will parse the specific structure known to Gemini REST
-                    
-                    // Regex capture for text content inside JSON structure
-                    const regex = /"text":\s*"((?:[^"\\]|\\.)*)"/g;
-                    let match;
-                    while ((match = regex.exec(chunk)) !== null) {
-                        let content = match[1];
-                        // Unescape JSON string
-                        content = JSON.parse(`"${content}"`); 
-                        fullResponseText += content;
-                        aiContentDiv.innerHTML = marked.parse(fullResponseText);
-                        scrollToBottom();
-                    }
-                }
-
-            } catch (error) {
-                fullResponseText += `\n\n*[Error: ${error.message}]*`;
-                aiContentDiv.innerHTML = marked.parse(fullResponseText);
-            } finally {
-                // Cleanup
-                aiContentDiv.classList.remove('typing-cursor');
-                document.getElementById('send-btn').disabled = false;
-                isGenerating = false;
-                
-                // Save AI Message
-                state.chats.find(c => c.id === state.currentChatId).messages.push({
-                    role: 'model',
-                    text: fullResponseText
-                });
-                saveState();
+            } catch (netErr) {
+                if (retryCount === maxRetries - 1) throw netErr;
+                retryCount++;
+                await new Promise(resolve => setTimeout(resolve, 2000));
             }
         }
 
-        // --- IMAGE HANDLING ---
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Raw = e.target.result; // "data:image/png;base64,....."
-                const split = base64Raw.split(',');
-                const type = split[0].match(/:(.*?);/)[1];
-                const data = split[1];
-
-                imagePayload = {
-                    mime_type: type,
-                    data: data
-                };
-
-                // Show Preview
-                const previewImg = document.getElementById('image-preview');
-                const previewCont = document.getElementById('image-preview-container');
-                previewImg.src = base64Raw;
-                previewCont.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            
+            const regex = /"text":\s*"((?:[^"\\]|\\.)*)"/g;
+            let match;
+            while ((match = regex.exec(chunk)) !== null) {
+                try {
+                    let content = JSON.parse(`"${match[1]}"`);
+                    fullResponseText += content;
+                    aiContentDiv.innerHTML = marked.parse(fullResponseText);
+                    scrollToBottom();
+                } catch (e) {}
+            }
         }
 
-        function clearImage() {
-            imagePayload = null;
-            document.getElementById('image-upload').value = "";
-            document.getElementById('image-preview-container').classList.add('hidden');
+        if (!fullResponseText || fullResponseText.trim() === "") {
+            fullResponseText = "⚠️ **নিরাপত্তা সতর্কতা:** গুগল এই উত্তরের বিষয়বস্তুকে 'নিরাপদ নয়' বলে মনে করছে এবং ব্লক করেছে। দয়া করে প্রশ্নটি একটু ঘুরিয়ে করুন।";
+            aiContentDiv.innerHTML = marked.parse(fullResponseText);
+            isError = true;
+        } else {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = `copy-btn absolute -bottom-6 left-0 text-slate-400 text-xs flex items-center gap-1 py-1 px-2 rounded hover:bg-slate-100 dark:hover:bg-slate-700`;
+            copyBtn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy`;
+            copyBtn.onclick = () => copyToClipboard(fullResponseText, copyBtn);
+            aiWrapper.appendChild(copyBtn);
         }
 
-        // --- UTILS ---
-        function scrollToBottom() {
-            const container = document.getElementById('messages-container');
-            container.scrollTop = container.scrollHeight;
-        }
+    } catch (error) {
+        isError = true;
+        fullResponseText = `⚠️ **দুঃখিত, একটু সমস্যা হচ্ছে:**\n\n_${error.message}_`;
+        aiContentDiv.innerHTML = marked.parse(fullResponseText);
+        aiContentDiv.classList.add('text-red-500');
+    } finally {
+        aiContentDiv.classList.remove('typing-cursor');
+        document.getElementById('send-btn').disabled = false;
+        isGenerating = false;
 
-        function escapeHtml(text) {
-            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
-            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        if (!isError) {
+            state.chats.find(c => c.id === state.currentChatId).messages.push({ role: 'model', text: fullResponseText });
+            saveState();
         }
-    </script>
+    }
+}
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Raw = e.target.result;
+        const split = base64Raw.split(',');
+        imagePayload = { mime_type: split[0].match(/:(.*?);/)[1], data: split[1] };
+        document.getElementById('image-preview').src = base64Raw;
+        document.getElementById('image-preview-container').classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+}
+
+function clearImage() {
+    imagePayload = null;
+    document.getElementById('image-upload').value = "";
+    document.getElementById('image-preview-container').classList.add('hidden');
+}
+
+function scrollToBottom() {
+    const container = document.getElementById('messages-container');
+    container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(text) {
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+</script>
 </body>
 </html>
