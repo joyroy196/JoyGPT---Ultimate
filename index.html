@@ -89,7 +89,7 @@
     <div id="app-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-white dark:bg-gemini-900">
         <div class="flex flex-col items-center gap-4">
             <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            <p class="text-slate-500 font-medium">Loading GrokBOT...</p>
+            <p class="text-slate-500 font-medium">Loading GrokBOT..</p>
         </div>
     </div>
 
@@ -201,7 +201,7 @@
         const STATE_KEY = "GrokBOT_state_v5"; // Version bump
         const MEMORY_LIMIT_MS = 45 * 24 * 60 * 60 * 1000; // 45 Days
 
-        const DEFAULT_SYSTEM_PROMPT = `তুমি একজন অত্যন্ত বুদ্ধিমান, স্মার্ট এবং বন্ধুসুলভ এআই সহকারী। তোমার কথা বলার ধরন হবে কৌতুকপূর্ণ এবং চটপটে। তুমি কঠিন বিষয়গুলোকে খুব সহজ এবং মজাদার উদাহরণ দিয়ে ব্যাখ্যা করো। তোমার উত্তরে বুদ্ধির ছটা থাকবে। কোড দেওয়ার সময় পরিষ্কার ফরম্যাট ব্যবহার করবে এবং সংক্ষিপ্ত ব্যাখ্যা দেবে। ব্যবহারকারীর সাথে এমনভাবে কথা বলবে যেন তুমি একজন জ্ঞানী অথচ হাসি-খুশি বন্ধু। কার্যকরী উত্তর দাও।`;
+        const DEFAULT_SYSTEM_PROMPT = `তুমি একজন অত্যন্ত বুদ্ধিমান, স্মার্ট এবং বন্ধুসুলভ AI সহকারী। তোমার কথা বলার ধরন হবে কৌতুকপূর্ণ এবং চটপটে। তুমি কঠিন বিষয়গুলোকে খুব সহজ এবং মজাদার উদাহরণ দিয়ে ব্যাখ্যা করো। তোমার উত্তরে বুদ্ধির ছটা থাকবে। কোড দেওয়ার সময় পরিষ্কার ফরম্যাট ব্যবহার করবে এবং সংক্ষিপ্ত ব্যাখ্যা দেবে। ব্যবহারকারীর সাথে এমনভাবে কথা বলবে যেন তুমি একজন জ্ঞানী অথচ হাসি-খুশি বন্ধু। কার্যকরী উত্তর দাও।`;
 
         let state = {
             apiKey: "",
